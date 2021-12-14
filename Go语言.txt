@@ -1,0 +1,563 @@
+VScode 和ubuntu的共享代码
+/mnt/hgfs/shareCode$
+
+
+
+GO语言的风格
+0.有指针*，有引用&
+
+1.一行后不写分号
+
+2.// 表示单行注释，  /*    */表示多行注释
+
+3.变量的声明必须用 空格 隔开
+
+4.输入输出和C比较像
+
+5.局部变量在自己块级作用域下没有 得到 使用，则编译器会报错
+
+6.if和for循环的里面的a:=10  用:=这样声明赋值的变量 仅用于if或for里面。即使外面有同名变量，但事实上也不是一个变量
+
+7.全局变量可以在整个包里面调用，甚至可以导出被外包使用
+
+8.变量的作用阈都是从当前块级作用域去找，没找到再层层往上找
+
+9.printf("%T" ,a)  //打印的是a的数据类型
+
+
+
+拓展：GO语言的Scan，Scanf，ScanIn的区别
+Scan(&a,&b) //这样读入就行，
+ScanIn(&a.&b)  //遇到空格才停止扫描
+
+fmt.print()打印不换行
+fmt.println()打印且自动换行
+fmt.printf("%d,%v",name,age) //这个跟c一样
+
+
+
+
+
+
+一：Go基本语法
+package main
+
+import "fmt"
+
+func main() {
+   /* 这是我的第一个简单的程序 */
+   fmt.Println("Hello, World!")
+}
+
+
+var name = 'sy'
+var age=17
+
+var result=fmt.Sprintf('我是名字是%s,我今年%d岁',name,age)  //转化一下格式
+
+fmt.PrintIn(result)  //输出结果    我的名字是sy，我今年17岁
+
+
+
+
+
+二：Go数据类型
+
+bool,int,float,string,指针(Pointer),数组，结构化类型(Struct)，Channel类型,函数类型,切片类型，接口类型(interface)  Map类型
+
+
+
+三：Go语言变量
+
+1,变量声明但没有赋值，默认是0值
+
+var a int
+var flag bool
+fmt.PrintIn(a,flag) //输出结果是0，false
+
+
+2.%v ,万能占位符
+
+
+3. a:=1   这是一种赋值方式，但只能在函数体内，无法在全局使用这种变量声明和赋值。
+
+初始化声明a后 不可再写  a:=2  // 只能 a=2  
+
+
+4. 多变量一行赋值
+
+var a,b int
+var str string
+a,b,str=1,2,"do you like me?"
+
+
+5.a,b的交换
+a,b=b,a
+
+
+6,_ 这个下滑线在go语言有特殊作用,用于接收一个变量，但只写不读,所以用于函数返回多个值可进行抛弃
+
+7.函数接受多个返回值
+
+func numbers()(int,int,string){    //必须这样写，不可省略
+	a,b,c:=1,2,"hello world"
+	return a,b,c
+}
+
+_,numB,strC:=numbers()   这句话的意思是。只接收b,c， a变量抛弃  
+
+
+
+四：Go语言常量
+
+1.常量的基本使用
+const LENGTH int = 10
+const WIDTH int =5
+area:=LENGTH*WIDTH
+fmt.PrintIn(area)  //输出50
+
+2.常量还可以用于枚举
+
+const=(
+	a=1
+	b="ahhh"
+	c     //特性 在定义常量组时，如果不提供初始值，则表示使用上行的表达式,所以c="ahhh"
+)
+fmt.PrintIn(a,b,c)  //输出结果是1,ahhh,ahhh
+
+
+3.iota特殊常量，可理解为const语句块中的行索引。iota从0开始计数，每增加一行表示加1
+const(
+	a=iota   //这个iota不是全局常量，只在这个const常量组里面内递增，换一个常量组又是从0开始
+	b        //延用上一行的表达式，b=iota，但这是第二行 所以iota++ ,b==1
+	c       //延用上一行的表达式，c=iota，但这是第三行 所以iota++ ， c==2
+)
+
+
+五：语言运算符
+跟c没区别，注意引用和指针
+package main
+
+import "fmt"
+
+func main() {
+	a := 10
+	_a := &a     //把内存地址赋值给了_a，所以_a存的是内存地址
+	b := 20
+	c := b
+
+	a = 520     //a的内容被修改了，_a通过引用地址访问到的变量也随机发生改变
+	b = 520
+
+	result := fmt.Sprintf("a==%v, *_a==%v,_a==%v,b==%v,c==%v", a, *_a, _a, b, c)
+	fmt.Print(result)
+
+	//应该会输出520 随机内存地址   520 20
+
+
+	你也可以反向操作*_a=5201314  //这样一修改, a即使没被修改，但里面的内容也变成了5201314
+}
+
+
+六：条件语句的判断
+
+特性：if,switch,slect
+1.可以声明一个变量，变量作用域只在if里面有用
+2.条件不能打括号()
+3.可以if。else if 这样
+4.Go语言里面没有while循环语句
+if num:=1;num<2{   //if语句的特性  if statement;condition
+}
+
+
+
+	//素数的判定
+	// var a int
+	// fmt.Println("请您输入一个数字,我们需要计算出这个数内的所有素数")
+	// fmt.Scan(&a)
+	// var flag bool
+	// for num := 2; num <= a; num++ {
+	// 	flag = true
+	// 	for i := 2; i < num; i++ {
+	// 		if num%i == 0 {
+	// 			flag = false
+	// 		}
+	// 	}
+	// 	if flag {
+	// 		fmt.Println(num)
+	// 	} else {
+	// 		continue
+	// 	}
+	// }
+
+
+Go语言swich额外的特性:fallthrouth   这个变量 表明，无论下一条case是否为true，都必须强制性执行
+    switch {
+    case false:
+            fmt.Println("1、case 条件语句为 false") 1 
+            fallthrough
+    case true:
+            fmt.Println("2、case 条件语句为 true") 2 
+            fallthrough
+    case false:
+            fmt.Println("3、case 条件语句为 false") 3 
+            fallthrough
+    case true:
+            fmt.Println("4、case 条件语句为 true") 4
+    case false:
+            fmt.Println("5、case 条件语句为 false") 5
+            fallthrough
+    default:
+            fmt.Println("6、默认 case")
+    }
+///输出的结果为  1不执行  2true  3false(因为上一个case里面加了fallthrough) 4true  5不执行
+
+
+七：循环语句
+
+
+1, for i:=1;i<=10;i++{
+	
+}
+2. loop:statement
+	goto loop   //跳转
+
+
+八：函数
+
+go函数的特点：可以返回多个值
+
+func name (参数) int(表示返回值的类型){    //
+
+
+1.打印9*9乘法表
+func main() {
+	for i := 1; i < 10; i++ {
+		for j := 1; j <= i; j++ {
+			add(j, i)
+		}
+		fmt.Print("\n")
+	}
+
+}
+func add(num1, num2 int) {
+	var result int = num1 * num2
+	fmt.Print(num1, " * ", num2, " = ", result, " ")
+}
+
+2.函数返回多个值
+func maxAB(a, b, c int) (int, int) {
+	return a, b
+}
+
+}
+
+3.参数是引用类型
+func main() {
+	a, b := 100, 200
+	fmt.Println(a, b)
+	swap(&a, &b)
+	fmt.Println(a, b)
+}
+func swap(num1, num2 *int) {
+	*num1 = 200
+	*num2 = 400
+}
+
+4.闭包函数(匿名好处直接使用函数内的变量，不用声明)
+package main
+
+import "fmt"
+
+func main() {
+	hhh := aaa()
+	fmt.Println(hhh())
+	fmt.Println(hhh())
+	fmt.Println(hhh())
+
+	qqq := aaa()
+	fmt.Println(qqq())
+}
+
+func aaa() func() int {
+	i := 0
+	return func() int {
+		i++
+		return i
+	}
+}
+
+//输出结果是  1，2，3，  1 ，2
+
+
+九：变量的作用域
+2.全局变量可以和局部变量 名字相同，但会优先访问局部变量.
+1,变量的作用阈都是从当前块级作用域去找，没找到再层层往上找
+
+
+变量作用域的例子：
+a := 5
+{
+    a := 3
+    fmt.Println("in a = ", a)
+}
+fmt.Println("out a = ", a)
+输出: in a = 3 out a = 5
+
+
+
+a := 5
+{
+    fmt.Println("in a = ", a)
+}
+fmt.Println("out a = ", a)
+输出: in a = 5 out a = 5 
+
+
+
+a := 5
+{
+    a := 3    
+    fmt.Println("a = ", a)
+}
+输出: a declared and not used
+
+
+
+十：Go数组
+特性：还需设置数组的大小
+获取数组长度：len(a)
+一维数组
+	var a [10]int //数组的声明，跟c一样。必须填写数组大小
+	for i := 0; i < 10; i++ {
+		a[i] = i
+		fmt.Println(a[i])
+	}
+	b := [...]int{1, 2, 3, 4} //数组的初始化，  ...代表你赋了多个元素，最终数组就会是多长  
+	fmt.Println(b[2])
+
+
+二维数组
+
+	b := [3][3]int{
+		{1, 2, 4},
+		{2, 4, 3},
+		{1, 3, 6},
+	}
+
+向函数传递数组
+
+func ([]int,size int){
+    //函数里面形参数组可以不定义大小
+}
+
+
+十一：指针
+&是取址的意思
+var a int =3
+var ptr *int=&a  
+
+1.通过地址传参给函数
+a,b:=2,3
+swap(&a,&b) 
+func swap(num1, num2 *int){
+	*num1,*num2=*num2,*num1
+}
+
+2.双重指针
+a:=3
+声明
+var ptr *int =&a
+var pptr **int=&ptr
+fmt.Println(a,*ptr,**ptr)  //输出
+
+
+
+十二：结构体
+type Books struct{
+	b_name string
+	b_author string
+	b_price float
+	b_num int	
+}
+
+
+type Books struct {
+	b_name   string
+	b_author string
+	b_price  float32
+	b_nums   int
+}
+
+func main() {
+	var book1 Books
+	book1.b_name = "GO语言程序设计"
+	book1.b_author = "苏月"
+	book1.b_price = 178.26
+	book1.b_nums = 3
+
+	//这个是传递book1的地址
+	changeBook(&book1)
+}
+func changeBook(book *Books) {
+	book.b_author = "皮皮"         //注意这里有个不一样 不用*book.b_author  写法不同
+	book.b_name = "哈哈语言设计"
+	book.b_nums = 3
+	book.b_price = 231615.5
+}
+
+
+十三：语言切片(Slice) 动态数组 
+特点：与数组的区别
+1.切片不需要声明长度
+2.切片的元素可变
+
+
+str := "苏月"       //string类型
+str1 := [3]string{"ccc", "aaa", "ddd"}   //数组类型
+str2 := []string{"qie1", "qie2", "qie3"}	//切片类型
+
+
+重点：
+1.切片这个数据结构由三个字段组成，   1，指向数组的指针，2，切片长度，3，切片容量
+2.通过修改数组的值，切片的内容也会随之改变
+3.var sp1:=make([]int,3,5) 通过make函数去创建切片
+
+func main() {
+	var sp []int //这个创建了一个空切片
+	var sp1:=make([]int,3,5)    //切片这个数据结构由三个字段组成，   1，指向数组的指针，2，切片长度，3，切片容量
+	if sp == nil {
+		fmt.Println("true")
+	}
+	a := [3]int{1, 2, 3}
+
+	sp = a[:]   //这个就是取a里面的所有值
+	fmt.Println(sp)
+
+	//通过修改数组的值，切片的内容也会随之改变
+	for i := 0; i < len(a); i++ {
+		a[i] = a[i] * 5
+	}
+	fmt.Println(sp)
+
+}
+
+切片常用操作
+s[n]   //n代表下标值，取索引为n的元素
+s[:]   //: 代表所有， 取s切片里面的所有元素
+s[n:]   //取n之后的所有元素，包括n
+s[:m]   //取m之前的所有元素，不包括m
+s[n:m]  //取[n,m) 之间的元素
+
+len(s)  //取s长度
+cap(s)  //取s切片的容量
+
+
+切片的常用方法
+1.给切片添加元素
+append()  //append()是添加元素的方法   
+a:=[]int{,1,2,3,2}
+a=append(a,10,250,30)   //append增加了元素，但需要一个新的数组去接收
+
+2.给切片扩容
+需要利用copy函数
+a_new:=make([]int,len(a),cap(a)*2)
+
+copy(a_new,a)  //把a切片拷贝到a_new里面去
+
+
+num:=[]int{1,2,9,4,3,0,7,8}
+num1 :=num[3:6]
+num1==[4,3,0]  len==3  cap==5   //为什么容量是5，因为原数组的容量8，因为n==3，所以新的切片num1的指针指向num原数组的下标n开始的。所以的容量-开始的下标
+len:m-n
+cap:k-n 
+
+
+
+十四：Range的使用
+
+Rang:类似于迭代器,会返回两个值，一个是索引，一个是值，如果只有一个参数接受 range 则，返回的是索引
+
+a:=[4]int{5,2,0,4}
+for index,value:= rang a{
+	fmt.Println(index,value)  //这种是正常的遍历
+}
+
+for num1:=range a{
+	//假设只有一个参数，则这个参数就是索引值
+}
+
+for _,value :=range a{
+	//可以利用_，来废弃这个值
+}
+
+
+
+十五：Map的使用
+
+	var m1 map[string]int   // 声明变量默认是nil，nil map不能存放键值对
+	m := make(map[string]int)	//使用make函数 创建 m键值对
+	m["苏月"] = 1
+	m["皮皮"] = 2
+	m["李四"] = 3
+	m["张三"] = 4
+	for key, value := range m {
+		fmt.Println(key, value)  //输出是无序的，可能是 张三 4 第一个输出， 也可能 皮皮 2第1个输出
+	}
+
+
+1.m集合里是否有某个键？？
+
+value,flag:=m[key]   //浅理解，两个参数。 当key存在时候，  value==m[key],flag==true   当key不存在时候,value==0,flag==false
+2.删除集合的key
+delete函数只用于map
+delete(m,key)  //这样就删除了
+
+
+十六：接口
+package main
+
+import "fmt"
+
+//定义两个结构体
+type Person struct {
+	id    int
+	money int
+}
+
+type PersonPlus struct {
+	id          int
+	money       int
+	pocketMoney int
+}
+
+//定义一个接口，接口里面有一个方法
+type SalaryCalculator interface {
+	CalculateSalary() int
+}
+
+//定义这个方法是干嘛用的，固定写法
+func (p Person) CalculateSalary() int {
+	return p.money
+}
+func (p PersonPlus) CalculateSalary() int {
+	return p.money + p.pocketMoney
+}
+
+func getTotalMoeny(people []SalaryCalculator) int {
+	var sum int
+	for _, value := range people {
+		sum += value.CalculateSalary()
+	}
+	return sum
+}
+func main() {
+	p1 := Person{110, 150}
+	p2 := Person{111, 150}
+	p_plus := PersonPlus{11, 300, 400}
+	//totalPerson := []SalaryCalculator{p1, p2, p_plus}
+	//result := getTotalMoeny(totalPerson)
+	//fmt.Println(result)
+
+	fmt.Println(p1.CalculateSalary(), p2.CalculateSalary(), p_plus.CalculateSalary())
+}
